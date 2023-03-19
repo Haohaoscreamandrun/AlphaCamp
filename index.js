@@ -3,6 +3,8 @@ const AllMovie = BASE_URL + "api/movies/"
 const poster = BASE_URL + "posters/"
 const movies = []
 const dataPanel = document.querySelector('#data-panel')
+const searchBar = document.querySelector('#search-form')
+const inputBar = document.querySelector('#search-input')
 
 axios
   .get(AllMovie)
@@ -23,6 +25,24 @@ dataPanel.addEventListener('click', event => {
   if (event.target.matches('.btn-show-movie')) {
     renderMovieModal(Number(event.target.dataset.id))
   }
+})
+
+searchBar.addEventListener('submit', event => {
+  event.preventDefault()
+  // take the input and store
+  const inputValue = inputBar.value.trim().toLowerCase()
+  // alert if empty
+  if (!inputValue.length) { alert("Please input string!") }
+  // new array of search comply
+  let complySearch = []
+  //filter through movies, for..of
+  for (const movie of movies) {
+    if (movie.title.toLowerCase().includes(inputValue)) {
+      complySearch.push(movie)
+    }
+  }
+  console.log(complySearch)
+
 })
 
 
@@ -59,11 +79,11 @@ function renderMovieModal(id) {
   const modalPoster = document.querySelector('#movie-modal-poster');
   const modalDate = document.querySelector('#movie-modal-date');
   const modalDescription = document.querySelector('#movie-modal-description');
-  axios.get(AllMovie+id).then(response=>{
+  axios.get(AllMovie + id).then(response => {
     const data = response.data.results;
     modalTitle.innerHTML = data.title;
     modalPoster.src = poster + data.image;
-    modalDate.innerHTML ='Released on: '+data.release_date;
+    modalDate.innerHTML = 'Released on: ' + data.release_date;
     modalDescription.innerHTML = data.description;
   })
- }
+}
