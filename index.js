@@ -33,18 +33,34 @@ searchBar.addEventListener('submit', event => {
   const inputValue = inputBar.value.trim().toLowerCase()
   // alert if empty
   if (!inputValue.length) { alert("Please input string!") }
+  
   // new array of search comply
   let complySearch = []
   //filter through movies, for..of
-  for (const movie of movies) {
-    if (movie.title.toLowerCase().includes(inputValue)) {
-      complySearch.push(movie)
-    }
-  }
-  console.log(complySearch)
+  // for (const movie of movies) {
+  //   if (movie.title.toLowerCase().includes(inputValue)) {
+  //     complySearch.push(movie)
+  //   }
+  // }
 
+  //filter through movies, filter (should use return)
+  complySearch = movies.filter(value => {
+    return value.title.toLowerCase().includes(inputValue)
+  })
+  //alert if no comply
+  if(!complySearch.length){alert(`Cannot find matches of input string: ${inputValue}`)}
+
+  //render new movies list
+  dataPanel.innerHTML = renderMovieList(complySearch)
 })
 
+//How to get the input value realtime?
+inputBar.addEventListener('keyup', event => {
+  const inputValue = inputBar.value.trim().toLowerCase()
+  let complySearch = []
+  complySearch = movies.filter(value => value.title.toLowerCase().includes(inputValue))
+  dataPanel.innerHTML = renderMovieList(complySearch)
+})
 
 //Function
 function renderMovieList(data) {
