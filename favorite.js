@@ -14,11 +14,10 @@ dataPanel.innerHTML = renderMovieList(movies)
 dataPanel.addEventListener('click', event => {
   if (event.target.matches('.btn-show-movie')) {
     renderMovieModal(Number(event.target.dataset.id))
-    // also listen to plus sign
-  } else if (event.target.matches('.btn-add-movie')) {
-    addToFavorite(Number(event.target.dataset.id))
+    // also listen to delete sign
+  } else if (event.target.matches('.btn-delete-movie')){
+    deleteFavMovie(Number(event.target.dataset.id))
   }
-
 })
 
 
@@ -40,7 +39,7 @@ function renderMovieList(data) {
             <div class="card-footer text-muted">
               <button class="btn btn-primary btn-show-movie" data-bs-toggle="modal"
                 data-bs-target="#movie-modal" data-id="${element.id}">More</button>
-              <button class="btn btn-info btn-add-movie" data-id="${element.id}">+</button>
+              <button class="btn btn-danger btn-delete-movie" data-id="${element.id}">X</button>
             </div>
           </div>
         </div>
@@ -64,24 +63,17 @@ function renderMovieModal(id) {
   })  
 }
 
-
-
-function addToFavorite(favId) {
-
-  function isIdMatch(movie) {
-    return movie.id === favId
-  }
-  // Target is to store the movie into local storage
-  // Get the movie id you click on
-  const favMovie = movies.find(isIdMatch)
-  // Reach out to the local storage for favorite movies(return empty array if no)
-  const favList = JSON.parse(localStorage.getItem('favoriteMovies')) || []
-  // Logic to tell if the click on movie already in favList
-  if (favList.some(isIdMatch)) {
-    return alert("Movie already in favorite list!")
-  } else {
-    // If not in list, store it in the list
-    favList.push(favMovie)
-    localStorage.setItem('favoriteMovies', JSON.stringify(favList))
-  }
+function deleteFavMovie(deId) {
+  // bug control - should not be execute if there's no fav movie
+  if (!movies || !movies.length) return 
+  //find the index of deId movie
+  const delMovieIndex = movies.findIndex(movie => movie.id === deId)
+  //bug control - don't delete if no match (findIndex will return -1 if nothing's found)
+  if (delMovieIndex === -1) return
+  //splice it from movies list
+  movies.splice(delMovieIndex,1)
+  //tug back to storage
+  localStorage.setItem('favoriteMovies', JSON.stringify(movies))
+  //render the screen
+  dataPanel.innerHTML = renderMovieList(movies)
 }
