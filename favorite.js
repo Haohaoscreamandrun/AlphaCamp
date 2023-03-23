@@ -6,63 +6,21 @@ const dataPanel = document.querySelector('#data-panel')
 const searchBar = document.querySelector('#search-form')
 const inputBar = document.querySelector('#search-input')
 
-axios
-  .get(AllMovie)
-  .then((response) => {
-    // 80 arrays
-    const movieArrary = response.data.results
-    // for + push...original method
-    //for (const movie of movieArrary) { movies.push(movie.title) }
-    //console.log(movies)
-    // ... spread operator (ES6)
-    movies.push(...movieArrary)
-    dataPanel.innerHTML = renderMovieList(movies)
-  })
+
+const movieArrary = JSON.parse(localStorage.getItem('favoriteMovies')) || []   
+movies.push(...movieArrary)
+dataPanel.innerHTML = renderMovieList(movies)
 
 dataPanel.addEventListener('click', event => {
   if (event.target.matches('.btn-show-movie')) {
     renderMovieModal(Number(event.target.dataset.id))
     // also listen to plus sign
-  } else if(event.target.matches('.btn-add-movie')){
+  } else if (event.target.matches('.btn-add-movie')) {
     addToFavorite(Number(event.target.dataset.id))
   }
 
 })
 
-searchBar.addEventListener('submit', event => {
-  event.preventDefault()
-  // take the input and store
-  const inputValue = inputBar.value.trim().toLowerCase()
-  // alert if empty
-  if (!inputValue.length) { alert("Please input string!") }
-  
-  // new array of search comply
-  let complySearch = []
-  //filter through movies, for..of
-  // for (const movie of movies) {
-  //   if (movie.title.toLowerCase().includes(inputValue)) {
-  //     complySearch.push(movie)
-  //   }
-  // }
-
-  //filter through movies, filter (should use return)
-  complySearch = movies.filter(value => {
-    return value.title.toLowerCase().includes(inputValue)
-  })
-  //alert if no comply
-  if(!complySearch.length){alert(`Cannot find matches of input string: ${inputValue}`)}
-
-  //render new movies list
-  dataPanel.innerHTML = renderMovieList(complySearch)
-})
-
-//How to get the input value realtime?
-inputBar.addEventListener('keyup', event => {
-  const inputValue = inputBar.value.trim().toLowerCase()
-  let complySearch = []
-  complySearch = movies.filter(value => value.title.toLowerCase().includes(inputValue))
-  dataPanel.innerHTML = renderMovieList(complySearch)
-})
 
 //Function
 function renderMovieList(data) {
@@ -103,16 +61,16 @@ function renderMovieModal(id) {
     modalPoster.src = poster + data.image;
     modalDate.innerHTML = 'Released on: ' + data.release_date;
     modalDescription.innerHTML = data.description;
-  })
+  })  
 }
 
 
 
-function addToFavorite(favId){
-  
-  function isIdMatch (movie) { 
-  return movie.id === favId 
-}
+function addToFavorite(favId) {
+
+  function isIdMatch(movie) {
+    return movie.id === favId
+  }
   // Target is to store the movie into local storage
   // Get the movie id you click on
   const favMovie = movies.find(isIdMatch)
@@ -120,7 +78,7 @@ function addToFavorite(favId){
   const favList = JSON.parse(localStorage.getItem('favoriteMovies')) || []
   // Logic to tell if the click on movie already in favList
   if (favList.some(isIdMatch)) {
-  return alert("Movie already in favorite list!")
+    return alert("Movie already in favorite list!")
   } else {
     // If not in list, store it in the list
     favList.push(favMovie)
