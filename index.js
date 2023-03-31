@@ -12,6 +12,7 @@ const searchBar = document.querySelector('#search-form')
 const inputBar = document.querySelector('#search-input')
 const paginator = document.querySelector('#paginator')
 const renderToggle = document.querySelector('#render-toggle')
+const modalPanel = document.querySelector('#movie-modal')
 
 axios
   .get(AllMovie)
@@ -101,7 +102,7 @@ function renderMovieList(data) {
               <h5 class="card-title">${element.title}</h5>
             </div>
             <div class="card-footer text-muted">
-              <button class="btn btn-primary btn-show-movie" data-bs-toggle="modal"
+              <button class="btn btn-primary btn-show-movie"
                 data-bs-target="#movie-modal" data-id="${element.id}">More</button>
               <button class="btn btn-info btn-add-movie" data-id="${element.id}">+</button>
             </div>
@@ -123,7 +124,7 @@ function renderMovieBar(data) {
         <h5 class="card-title">${element.title}</h5>
       </div>
       <div class="col-6 text-end">
-        <button class="btn btn-primary btn-show-movie" data-bs-toggle="modal"
+        <button class="btn btn-primary btn-show-movie"
             data-bs-target="#movie-modal" data-id="${element.id}">More</button>
         <button class="btn btn-info btn-add-movie" data-id="${element.id}">+</button>
       </div>
@@ -134,18 +135,23 @@ function renderMovieBar(data) {
   dataPanel.innerHTML = rawHTML;
 }
 
-function renderMovieModal(id) {
+async function renderMovieModal(id) {
   const modalTitle = document.querySelector('#movie-modal-title');
   const modalPoster = document.querySelector('#movie-modal-poster');
   const modalDate = document.querySelector('#movie-modal-date');
   const modalDescription = document.querySelector('#movie-modal-description');
-  axios.get(AllMovie + id).then(response => {
+  try {
+    const response = await axios.get(AllMovie + id);
     const data = response.data.results;
     modalTitle.innerHTML = data.title;
     modalPoster.src = poster + data.image;
     modalDate.innerHTML = 'Released on: ' + data.release_date;
     modalDescription.innerHTML = data.description;
-  })
+    const movieModal = new bootstrap.Modal(modalPanel);
+    movieModal.show();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 
