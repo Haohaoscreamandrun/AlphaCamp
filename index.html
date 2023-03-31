@@ -8,6 +8,8 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <!-- font awesome -->
+  <script src="https://kit.fontawesome.com/698455ed47.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -34,17 +36,26 @@
   </nav>
 
   <div class="container mt-5">
-    <!-- Search Bar -->
-    <div class="row" id="search-bar">
-      <form class="row row-cols-lg-auto g-3 mb-3 align-items-center" id="search-form">
-        <div class="col-12">
-          <label class="visually-hidden" for="autoSizingInput">Search Keywords</label>
-          <input type="text" class="form-control" id="search-input" placeholder="Keyword...">
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary" id="search-submit">Search</button>
-        </div>
-      </form>
+    <div class="search-list-card-toggle">
+      <!-- Search Bar -->
+      <div class="row" id="search-bar">
+        <form class="row g-3 mb-3 align-items-center" id="search-form">
+          <div class="col-5">
+            <label class="visually-hidden" for="autoSizingInput">Search Keywords</label>
+            <input type="text" class="form-control" id="search-input" placeholder="Keyword...">
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary" id="search-submit">Search</button>
+          </div>
+          <div class="col-5 text-end" id="render-toggle">
+            <!-- list-card toggle -->
+          <i class="fa-solid fa-chart-bar fa-lg" id="render-bar"
+            style="--fa-primary-color: #4063a0; --fa-secondary-color: #646973;"></i>
+          <i class="fa-solid fa-table-cells fa-lg" id="render-card"
+            style="--fa-primary-color: #8896af; --fa-secondary-color: #8896af;"></i>
+          </div>
+        </form>
+      </div>
     </div>
     <!-- Data-panel -->
     <div class="row" id="data-panel">
@@ -91,7 +102,9 @@
         <div class="modal-body" id="movie-modal-body">
           <div class="row">
             <div class="col-sm-8">
-              <img src="https://raw.githubusercontent.com/ALPHACamp/movie-list-api/master/public/posters/80PWnSTkygi3QWWmJ3hrAwqvLnO.jpg" alt="movie-modal-poster" id="movie-modal-poster">
+              <img
+                src="https://raw.githubusercontent.com/ALPHACamp/movie-list-api/master/public/posters/80PWnSTkygi3QWWmJ3hrAwqvLnO.jpg"
+                alt="movie-modal-poster" id="movie-modal-poster">
             </div>
             <div class="col-sm-4">
               <p><em id="movie-modal-date">release date :</em></p>

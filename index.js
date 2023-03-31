@@ -3,13 +3,15 @@ const AllMovie = BASE_URL + "api/movies/"
 const poster = BASE_URL + "posters/"
 const movies = []
 const moviesPerPage = 12
-let prevPage = 0;
+let prevPage = 1;
 let complySearch = []
+let keyValue = '';
+let renderMode = 'Card';
 const dataPanel = document.querySelector('#data-panel')
 const searchBar = document.querySelector('#search-form')
 const inputBar = document.querySelector('#search-input')
 const paginator = document.querySelector('#paginator')
-
+const renderToggle = document.querySelector('#render-toggle')
 
 axios
   .get(AllMovie)
@@ -21,8 +23,7 @@ axios
     //console.log(movies)
     // ... spread operator (ES6)
     movies.push(...movieArrary)
-    renderMovieList(getMoviesByPage(1))
-    renderPagination(movies)
+    renderPage(1)
   })
 
 
@@ -55,16 +56,14 @@ searchBar.addEventListener('submit', event => {
   if (!complySearch.length) { alert(`Cannot find matches of input string: ${inputValue}`) }
 
   //render new movies list
-  renderMovieList(getMoviesByPage(1))
-  renderPagination(complySearch)
+  renderPage(1)
 })
 
 //How to get the input value realtime?
 inputBar.addEventListener('keyup', event => {
-  const inputValue = inputBar.value.trim().toLowerCase()
-  complySearch = movies.filter(value => value.title.toLowerCase().includes(inputValue))
-  renderMovieList(getMoviesByPage(1))
-  renderPagination(complySearch)
+  keyValue = inputBar.value.trim().toLowerCase()
+  complySearch = movies.filter(value => value.title.toLowerCase().includes(keyValue))
+  renderPage(1)
 })
 
 paginator.addEventListener('click', event => {
@@ -73,8 +72,18 @@ paginator.addEventListener('click', event => {
   if (page !== 'p' && page !== 'n') {
     page = Number(page)
   }
-  renderMovieList(getMoviesByPage(page))
+  renderPage(page)
 })
+
+renderToggle.addEventListener('click', event => {
+  if(event.target.id === 'render-bar'){
+    renderMode = 'Bar'
+  } else if (event.target.id === 'render-card'){
+    renderMode = 'Card'
+  }
+  renderPage(prevPage)
+})
+
 
 //Function
 function renderMovieList(data) {
@@ -101,6 +110,27 @@ function renderMovieList(data) {
       </div>
       `
   });
+  dataPanel.innerHTML = rawHTML;
+}
+
+function renderMovieBar(data) {
+  let rawHTML = '<div class="container text-start">'
+  data.forEach(element => {
+    rawHTML +=
+    `
+    <div class="row align-items-start mt-2 mb-2 pt-2 border-top border-top-info border-top-2">
+      <div class="col-6">
+        <h5 class="card-title">${element.title}</h5>
+      </div>
+      <div class="col-6 text-end">
+        <button class="btn btn-primary btn-show-movie" data-bs-toggle="modal"
+            data-bs-target="#movie-modal" data-id="${element.id}">More</button>
+        <button class="btn btn-info btn-add-movie" data-id="${element.id}">+</button>
+      </div>
+    </div>
+    `
+  })
+  rawHTML += '</div>'
   dataPanel.innerHTML = rawHTML;
 }
 
@@ -141,46 +171,40 @@ function addToFavorite(favId) {
 }
 
 function getMoviesByPage(currentPage) {
-  const data = complySearch.length? complySearch : movies
+  const data = keyValue.length? complySearch : movies
   const totalPages = Math.ceil(data.length / moviesPerPage);
-
-  let startIndex, endIndex;
   switch (currentPage) {
     case 'p':
-      if (prevPage > 1) {
-        startIndex = (prevPage - 2) * moviesPerPage;
-        prevPage -= 1
-      } else if (prevPage === 1) {
-        startIndex = (prevPage - 1) * moviesPerPage;
+      if (prevPage === 1) {
         alert("You're now at the first page!")
       }
+      prevPage = Math.max(1, prevPage-1)
       break;
     case 'n':
-      if (prevPage < totalPages) {
-        startIndex = prevPage * moviesPerPage;
-        prevPage += 1
-      } else if (prevPage === totalPages) {
-        startIndex = (prevPage - 1) * moviesPerPage;
+      if (prevPage === totalPages) {
         alert("You're at the last page!")
       }
+      prevPage = Math.min(totalPages, prevPage + 1)
       break;
     default:
       if (!isNaN(currentPage)) {
-        startIndex = (currentPage - 1) * moviesPerPage;
         prevPage = currentPage
-        break;
-      }
+        }
+      break;
+      
   }
-
+  const startIndex = (prevPage - 1) * moviesPerPage;
   const pageGroup = data.slice(startIndex, startIndex + moviesPerPage);
   return pageGroup;
 }
 
 
 
-function renderPagination(movie) {
+function renderPagination() {
+  //Are users searching something?
+  const data = keyValue.length ? complySearch : movies
   //How many pages?
-  const numberOfPages = Math.ceil(movie.length / moviesPerPage)
+  const numberOfPages = Math.ceil(data.length / moviesPerPage)
   // declaration
   let pageHTML = '<li class="page-item"><a class="page-link" href="#" data-page="p">Previous</a></li>'
   // loop
@@ -193,4 +217,13 @@ function renderPagination(movie) {
   pageHTML += `<li class="page-item"><a class="page-link" href="#" data-page="n">Next</a></li>`
   // render
   paginator.innerHTML = pageHTML
+}
+
+function renderPage (page){
+  if (renderMode === 'Card') {
+    renderMovieList(getMoviesByPage(page))
+  } else if (renderMode === 'Bar') {
+    renderMovieBar(getMoviesByPage(page))
+  }
+  renderPagination()
 }
