@@ -135,25 +135,44 @@ function renderMovieBar(data) {
   dataPanel.innerHTML = rawHTML;
 }
 
-async function renderMovieModal(id) {
+// async function renderMovieModal(id) {
+//   const modalTitle = document.querySelector('#movie-modal-title');
+//   const modalPoster = document.querySelector('#movie-modal-poster');
+//   const modalDate = document.querySelector('#movie-modal-date');
+//   const modalDescription = document.querySelector('#movie-modal-description');
+//   try {
+//     const response = await axios.get(AllMovie + id);
+//     const data = response.data.results;
+//     modalTitle.innerHTML = data.title;
+//     modalPoster.src = poster + data.image;
+//     modalDate.innerHTML = 'Released on: ' + data.release_date;
+//     modalDescription.innerHTML = data.description;
+//     const movieModal = new bootstrap.Modal(modalPanel);
+//     movieModal.show();
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+function renderMovieModal(id) {
   const modalTitle = document.querySelector('#movie-modal-title');
   const modalPoster = document.querySelector('#movie-modal-poster');
   const modalDate = document.querySelector('#movie-modal-date');
   const modalDescription = document.querySelector('#movie-modal-description');
-  try {
-    const response = await axios.get(AllMovie + id);
+  axios.get(AllMovie + id)
+  .then(response =>{
     const data = response.data.results;
     modalTitle.innerHTML = data.title;
     modalPoster.src = poster + data.image;
     modalDate.innerHTML = 'Released on: ' + data.release_date;
     modalDescription.innerHTML = data.description;
+  })
+  .then(()=>{
     const movieModal = new bootstrap.Modal(modalPanel);
     movieModal.show();
-  } catch (error) {
-    console.error(error);
-  }
+  })
+  .catch((error) => { console.error(error) })
 }
-
 
 
 function addToFavorite(favId) {
